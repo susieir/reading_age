@@ -18,6 +18,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import nltk
+from nltk.corpus import stopwords
+#nltk.download("stopwords")
 
 # Copied from data_load_explore [TODO - Find a way to call the function from data_load_explore]
 def load_and_clean():
@@ -90,10 +93,41 @@ def std_word_len():
 
 df_clean['std_word_len'] = std_word_len()
 
+# Maximum word length
+
+def max_word_len():
+    """ A function that create a list of the maximum word length for each observation"""
+    max_word_len_list = []
+    for obs in df_clean.excerpt:
+        max_word_len = max([len(word) for word in obs.split(" ")])
+        max_word_len_list.append(max_word_len)
+    return max_word_len_list
+
+df_clean['max_word_len'] = max_word_len()
+
+# Number of stop words
+
+stop_words = set(stopwords.words("english"))
+
+def ratio_stop_words():
+    list_ratios = []
+    for obs in df_clean.excerpt:
+        no_words = len([word for word in obs.split(" ")])
+        no_stop_words = len([word for word in obs.split(" ") if word in stop_words])
+        ratio = no_stop_words / no_words
+        list_ratios.append(ratio)
+    return list_ratios
+
+#print(df_clean.excerpt[20])
+#print(len([word for word in df_clean.excerpt[20].split(" ") if word in stop_words]))
+#print(len([word for word in df_clean.excerpt[20].split(" ")]))
+
+df_clean['ratio_stop_words'] = ratio_stop_words()
+
 ##############################################################################################################################
 #### EDA - Univariate
 ##############################################################################################################################
-
+"""
 #### Age 
 # Age profile
 age_profile = df_clean.age.value_counts().sort_index()
@@ -246,6 +280,38 @@ std_word_len_profile_norm = df_clean.std_word_len.value_counts(normalize = True)
 print("The mean of the distribution of standard deviation of word length is {:.1f}".format(df_clean.std_word_len.mean()))
 print("The median of the distribution of standard deviation of word length is {:.2f}".format(df_clean.std_word_len.median()))
 
+
+
+#### Maximum word length
+max_word_len_profile = df_clean.max_word_len.value_counts().sort_index()
+max_word_len_profile_norm = df_clean.max_word_len.value_counts(normalize = True).sort_index()
+
+# Graph - non normalised
+#max_word_len_profile.plot()
+#plt.xlabel("Maximum word length")
+#plt.ylabel("Number of occurrences")
+#plt.title("Frequency of max word length")
+#plt.show()
+
+# Graph - normalised
+#max_word_len_profile_norm.plot()
+#plt.xlabel("Maximum word length")
+#plt.ylabel("Percentage")
+#plt.title("Distribution of max word length")
+#plt.show()
+
+# How is the distribution centred
+print("The mean of the distribution of max word length is {:.1f}".format(df_clean.max_word_len.mean()))
+print("The median of the distribution of max word length is {:.2f}".format(df_clean.max_word_len.median()))
+
+# How many observations are there where max_word_len > 15
+max_word_len_over_15 = df_clean.max_word_len[df_clean.max_word_len > 15].count()
+print("There are {} books with a maximum word length of more than 15 characters".format(max_word_len_over_15))
+# What proportion of observations have max_word_len > 15
+prop_max_word_len_over_15 = max_word_len_over_15 / len(df_clean.max_word_len)
+print("{:.1%} of observations have a maximum word length of more than 15 characters".format(prop_max_word_len_over_15))
+
+
 ##############################################################################################################################
 #### EDA - Multivariate
 ##############################################################################################################################
@@ -271,3 +337,9 @@ print("The median of the distribution of standard deviation of word length is {:
 #plt.title("Age vs. std of word length")
 #plt.show()
 
+#### Age vs. max word length
+#sns.relplot(x = 'max_word_len', y = 'age', data = df_clean, alpha = 0.2)
+#plt.xscale('log')
+#plt.title("Age vs. max word length")
+#plt.show()
+"""
