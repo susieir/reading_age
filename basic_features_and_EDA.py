@@ -127,7 +127,7 @@ df_clean['ratio_stop_words'] = ratio_stop_words()
 ##############################################################################################################################
 #### EDA - Univariate
 ##############################################################################################################################
-"""
+
 #### Age 
 # Age profile
 age_profile = df_clean.age.value_counts().sort_index()
@@ -312,6 +312,30 @@ prop_max_word_len_over_15 = max_word_len_over_15 / len(df_clean.max_word_len)
 print("{:.1%} of observations have a maximum word length of more than 15 characters".format(prop_max_word_len_over_15))
 
 
+
+#### Ratio stop words
+ratio_stop_words_profile = df_clean.ratio_stop_words.value_counts().sort_index()
+ratio_stop_words_profile_norm = df_clean.ratio_stop_words.value_counts(normalize = True).sort_index()
+
+# Graph - non normalised
+#ratio_stop_words_profile.plot()
+#plt.xlabel("Ratio of stop words")
+#plt.ylabel("Number of occurrences")
+#plt.title("Frequency of ratio of stop words")
+#plt.show()
+
+# Graph - normalised
+#ratio_stop_words_profile_norm.plot()
+#plt.xlabel("Ratio of stop words")
+#plt.ylabel("Percentage")
+#plt.title("Distribution of ratio of stop words")
+#plt.show()
+
+# How is the distribution centred
+print("The mean of the distribution of ratio of stop words is {:.1f}".format(df_clean.ratio_stop_words.mean()))
+print("The median of the distribution of ratio of stop words is {:.2f}".format(df_clean.ratio_stop_words.median()))
+
+
 ##############################################################################################################################
 #### EDA - Multivariate
 ##############################################################################################################################
@@ -342,4 +366,9 @@ print("{:.1%} of observations have a maximum word length of more than 15 charact
 #plt.xscale('log')
 #plt.title("Age vs. max word length")
 #plt.show()
-"""
+
+#### Age vs. ratio of stop words
+sns.relplot(x = 'ratio_stop_words', y = 'age', data = df_clean, alpha = 0.2)
+#plt.xscale('log')
+plt.title("Age vs. ratio of stop words")
+plt.show()
